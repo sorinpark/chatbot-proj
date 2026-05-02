@@ -23,15 +23,15 @@ def get_initial_state():
         "폭군심기": 60,
         "대화횟수_이번주": 0,
         "연속칭찬횟수": 0,        # 폭군 대화 중 3회 연속 칭찬 체크용
-        "미니게임_결과": {
-            # True = 성공, False = 실패, None = 아직 안함
-            "협력세력_1차": None,  # 1주차
-            "사병키우기_1차": None, # 2주차
-            "비밀서신": None,       # 3주차
-            "폭군대화_1차": None,   # 4주차
-            "사병키우기_2차": None, # 5주차
-            "협력세력_2차": None,   # 6주차
-        },
+    "미니게임_결과": {
+    "협력세력_1차": None,
+    "사병키우기_1차": None,
+    "비밀서신": None,
+    "폭군대화_1차": None,
+    "사병키우기_2차": None,
+    "사병키우기_3차": None,  # ← 추가
+    "협력세력_2차": None,
+},
         "conversation_history": []  # GPT에 넘길 대화 기록
     }
 
@@ -153,11 +153,12 @@ def minigame_협력세력(state, choice, round_key):
 # 5주차: 700 초과 입력 시 발각
 # ───────────────────────────────
 def minigame_사병키우기(state, count, round_key):
-    """
-    count: 유저가 입력한 사병 수 (100~800)
-    round_key: "사병키우기_1차" | "사병키우기_2차"
-    """
-    limit = 300 if round_key == "사병키우기_1차" else 700
+    if round_key == "사병키우기_1차":
+        limit = 300
+    elif round_key == "사병키우기_2차":
+        limit = 700
+    else:  # 3차
+        limit = 700
 
     if count > limit:
         state["미니게임_결과"][round_key] = False
@@ -166,7 +167,6 @@ def minigame_사병키우기(state, count, round_key):
         state = update_사병수(state, count)
         state["미니게임_결과"][round_key] = True
         return state, True, None
-
 
 # ───────────────────────────────
 # 미니게임: 비밀 서신 전달

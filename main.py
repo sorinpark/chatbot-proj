@@ -53,7 +53,10 @@ class ChatRequest(BaseModel):
 class MinigameRequest(BaseModel):
     type: str    # "협력세력_1차" | "사병키우기_1차" | "비밀서신" 등
     choice: str  # 유저 선택값
-
+class RecommendRequest(BaseModel):
+    week: int = 1
+    affection: int = 0
+    last_npc_text: str = ""
 
 # ───────────────────────────────
 # GPT 호출 함수
@@ -70,13 +73,20 @@ def call_gpt(system_prompt: str, history: list) -> dict:
 
     raw = response.choices[0].message.content
 
-    # JSON 파싱 (GPT가 가끔 ```json 붙여서 줄 수 있어서 제거)
+    print("=== GPT RAW 응답 ===")
+    print(raw)
+    print("====================")
+
     clean = raw.strip().replace("```json", "").replace("```", "").strip()
 
     try:
-        return json.loads(clean)
+        parsed = json.loads(clean)
+        if isinstance(parsed, list):
+            parsed = parsed[0]
+        if isinstance(parsed, str):
+            parsed = json.loads(parsed)
+        return parsed
     except json.JSONDecodeError:
-        # 파싱 실패 시 기본값 반환
         return {
             "대사": raw,
             "호감도변화": 0,
@@ -86,6 +96,27 @@ def call_gpt(system_prompt: str, history: list) -> dict:
             "힌트": None
         }
 
+   
+
+@app.post("/recommend")
+def recommend(req: RecommendRequest):
+    prompt = f"""조선시대 궁중 게임에서 플레이어가 폐위된 왕 희종에게 할 수 있는 추천 답변 5개를 만들어줘.
+조건: {req.week}주차, 호감도={req.affection}, 희종의 마지막 말="{req.last_npc_text}".
+각 답변은 자연스러운 한국어 1문장(20자 이내).
+반드시 JSON 배열로만: ["답변1","답변2","답변3","답변4","답변5"]. JSON 외 절대 없이."""
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.8,
+    )
+    raw = response.choices[0].message.content
+    clean = raw.strip().replace("```json","").replace("```","").strip()
+    try:
+        parsed = json.loads(clean)
+        return {"추천답변": parsed}
+    except:
+        return {"추천답변": ["전하, 안녕하십니까.", "걱정 마시옵소서.", "함께하겠습니다.", "백성들이 기다리오.", "힘내시길 바라오."]}
 
 # ───────────────────────────────
 # 엔드포인트 1: 서버 상태 확인
@@ -172,22 +203,23 @@ def chat(req: ChatRequest):
         success_result = check_success(game_state)
 
     # 9. 프론트에 응답 반환
-    return {
-        # 캐릭터 대사
-        "대사": gpt_response.get("대사", ""),
-        "추천답변": gpt_response.get("추천답변", []),
-        "이미지키워드": gpt_response.get("이미지키워드", ""),
-        "힌트": gpt_response.get("힌트", None),
+   # 9. 프론트에 응답 반환
+return {
+    "대사": gpt_response.get("대사", ""),
+    "추천답변": gpt_response.get("추천답변", []),
+    "이미지키워드": gpt_response.get("이미지키워드", ""),
+    "힌트": gpt_response.get("힌트", None),
 
-        # 업데이트된 스탯
-        "stats": {
-            "호감도": game_state["호감도"],
-            "호감도변화": 호감도_변화,
-            "사병수": game_state["사병수"],
-            "민심": game_state["민심"],
-            "폭군심기": game_state["폭군심기"],
-            "week": game_state["week"],
-        },
+    "stats": {
+        "호감도": game_state["호감도"],
+        "호감도변화": 호감도_변화,
+        "사병수": game_state["사병수"],
+        "민심": game_state["민심"],
+        "폭군심기": game_state["폭군심기"],
+        "폭군심기변화": gpt_response.get("심기변화", 0),  # ← 추가
+        "week": game_state["week"],
+    },
+
 
         # 게임 흐름 정보
         "week_advanced": week_advanced,
