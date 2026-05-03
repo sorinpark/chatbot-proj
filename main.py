@@ -44,7 +44,7 @@ app.add_middleware(
 )
 
 # 게임 상태 (서버 메모리에 저장 - 추후 DB로 교체 가능)
-game_state = load_state()
+game_state = get_initial_state()
 
 
 # ───────────────────────────────
