@@ -1,5 +1,5 @@
 # main.py
-
+import re
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -72,31 +72,63 @@ def call_gpt(system_prompt: str, history: list) -> dict:
     )
 
     raw = response.choices[0].message.content
-
     print("=== GPT RAW 응답 ===")
     print(raw)
     print("====================")
 
+    import re
     clean = raw.strip().replace("```json", "").replace("```", "").strip()
-
+    clean = re.sub(r':\s*\+(\d)', r': \1', clean)
+    if not clean.startswith("{") and not clean.startswith("["):
+            return {
+        "대사": clean[:150],
+        "호감도변화": 0,
+        "이유": "텍스트 응답",
+        "추천답변": ["계속 말씀해 주시오.", "전하가 용기를 더 내시면 좋겠습니다.", "저는 전하와 늘 함께하겠습니다."],
+        "이미지키워드": "유배지 왕",
+        "힌트": None
+    }
     try:
         parsed = json.loads(clean)
         if isinstance(parsed, list):
             parsed = parsed[0]
         if isinstance(parsed, str):
             parsed = json.loads(parsed)
+
+        # 대사 안에 JSON이 끼어있으면 제거
+        # 대사 안에 JSON이 끼어있으면 제거
+        if "대사" in parsed:
+            대사 = parsed["대사"]
+            brace_idx = 대사.find('{"')
+        if brace_idx == -1:
+            brace_idx = 대사.find('{ "')
+        if brace_idx > 0:
+            parsed["대사"] = 대사[:brace_idx].strip()
+            # JSON 없이 텍스트만 온 경우 → 대사로 처리
+        
         return parsed
+    
     except json.JSONDecodeError:
+        대사_match = re.search(r'"대사"\s*:\s*"([^"]+)"', clean)
+        호감도_match = re.search(r'"호감도변화"\s*:\s*([+-]?\d+)', clean)
+        
+        # 추천답변만 정확하게 추출
+        추천_match = re.search(r'"추천답변"\s*:\s*\[([^\]]+)\]', clean)
+        추천답변 = ["다시 말씀해 주시오.", "전하, 괜찮으십니까?", "..."]
+        if 추천_match:
+            items = re.findall(r'"([^"]+)"', 추천_match.group(1))
+            if len(items) >= 3:
+                추천답변 = items[:3]
+
+        대사 = 대사_match.group(1) if 대사_match else clean[:100]
         return {
-            "대사": raw,
-            "호감도변화": 0,
+            "대사": 대사,
+            "호감도변화": int(호감도_match.group(1)) if 호감도_match else 0,
             "이유": "파싱 오류",
-            "추천답변": ["다시 말씀해 주시오.", "전하, 괜찮으십니까?", "..."],
+            "추천답변": 추천답변,
             "이미지키워드": "유배지 왕",
             "힌트": None
         }
-
-   
 
 @app.post("/recommend")
 def recommend(req: RecommendRequest):
@@ -203,8 +235,8 @@ def chat(req: ChatRequest):
         success_result = check_success(game_state)
 
     # 9. 프론트에 응답 반환
-   # 9. 프론트에 응답 반환
-return {
+    return {
+
     "대사": gpt_response.get("대사", ""),
     "추천답변": gpt_response.get("추천답변", []),
     "이미지키워드": gpt_response.get("이미지키워드", ""),

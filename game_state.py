@@ -117,7 +117,7 @@ def check_success(state):
         return "복위_성공_엔딩"
 
     elif state["호감도"] < 90:
-        return "희종_설득_실패_엔딩"   # 단종: "나 여기 살게 그냥"
+        return "희종_설득_실패_엔딩"  
 
     elif state["사병수"] < 1000:
         return "사병_부족_엔딩"        # 전장에서 전원 사망
