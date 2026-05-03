@@ -1,0 +1,357 @@
+{
+  "week": 9,
+  "호감도": 100,
+  "사병수": 650,
+  "민심": 60,
+  "폭군심기": 40,
+  "대화횟수_이번주": 2,
+  "연속칭찬횟수": 0,
+  "미니게임_결과": {
+    "협력세력_1차": true,
+    "사병키우기_1차": true,
+    "비밀서신": true,
+    "폭군대화_1차": null,
+    "사병키우기_2차": true,
+    "사병키우기_3차": null,
+    "협력세력_2차": null
+  },
+  "conversation_history": [
+    {
+      "role": "user",
+      "content": "오랜만입니다, 전하."
+    },
+    {
+      "role": "assistant",
+      "content": "오랜만이오."
+    },
+    {
+      "role": "user",
+      "content": "건강은 어떠하신지요?"
+    },
+    {
+      "role": "assistant",
+      "content": "그저 그렇소."
+    },
+    {
+      "role": "user",
+      "content": "식사는 잘 하고 계신지요?"
+    },
+    {
+      "role": "assistant",
+      "content": "대충 먹고 있소."
+    },
+    {
+      "role": "user",
+      "content": "마음에 드는 음식이 있으신지요?"
+    },
+    {
+      "role": "assistant",
+      "content": "별로 없소."
+    },
+    {
+      "role": "user",
+      "content": "그래도 입맛에 맞는 것을 찾을 수 있을 것입니다."
+    },
+    {
+      "role": "assistant",
+      "content": "흠... 그럴 수도 있겠구나."
+    },
+    {
+      "role": "user",
+      "content": "밤새 눈이 많이 내렸습니다. 창 밖을 한번 보시지요."
+    },
+    {
+      "role": "assistant",
+      "content": "참으로 아름답구나. 하지만 백성들이 걱정이로다."
+    },
+    {
+      "role": "user",
+      "content": "백성들이 걱정이십니까?"
+    },
+    {
+      "role": "assistant",
+      "content": "그들의 고생이 눈에 밟히니 마음이 무겁소."
+    },
+    {
+      "role": "user",
+      "content": "백성들을 위한 일이라면 제가 돕겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "감사하오. 그들의 고통을 조금이라도 덜어주고 싶소."
+    },
+    {
+      "role": "user",
+      "content": "백성을 위한 일이라면 함께 고민해보겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "함께 고민해주신다니 고맙소."
+    },
+    {
+      "role": "user",
+      "content": "어떤 문제들이 있는지 말씀해 주십시오."
+    },
+    {
+      "role": "assistant",
+      "content": "가뭄과 추위로 인해 농사가 어려워졌다는 말을 들었소. 백성들이 힘들어하고 있소."
+    },
+    {
+      "role": "user",
+      "content": "백성들은 아직 전하를 잊지 않았습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "정말 그러하다면 다행이오. 백성들에게 조금이나마 도움이 되기를 바라오."
+    },
+    {
+      "role": "user",
+      "content": "전하의 복위를 바라는 소리가 들립니다."
+    },
+    {
+      "role": "assistant",
+      "content": "백성들이 그렇게 생각한다면, 나도 그 소망을 이루기 위해 노력할 것이오."
+    },
+    {
+      "role": "user",
+      "content": "저도 전하의 복위를 돕고 싶습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "진심으로 고맙소. 함께 힘을 모아 나아가보도록 하겠소."
+    },
+    {
+      "role": "user",
+      "content": "전하를 위해 최선을 다하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "고맙소. 나도 최선을 다하겠소."
+    },
+    {
+      "role": "user",
+      "content": "백성들도 전하를 기다리고 있습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "백성들이 나를 기다린다면, 그 기대에 부응하고 싶소."
+    },
+    {
+      "role": "user",
+      "content": "유배지 인근 산세에 사병들을 매복시켜 두었습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그대의 준비에 감사하오. 하지만 백성들이 다치지 않도록 신중히 움직여야 하오."
+    },
+    {
+      "role": "user",
+      "content": "안전이 최우선입니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇소. 안전이 최우선이니, 그 점을 잊지 말아주시오."
+    },
+    {
+      "role": "user",
+      "content": "알겠습니다, 전하."
+    },
+    {
+      "role": "assistant",
+      "content": "함께라면 무엇이든 해낼 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하의 뜻을 받들겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그대의 충심에 감사하오. 함께 나아가도록 하겠소."
+    },
+    {
+      "role": "user",
+      "content": "백성을 위한 길을 함께 찾겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "함께 백성들을 위한 길을 찾을 수 있다면, 더할 나위 없이 좋겠소."
+    },
+    {
+      "role": "user",
+      "content": "아닙니다 오해입니다"
+    },
+    {
+      "role": "assistant",
+      "content": "...네놈, 수상하구나."
+    },
+    {
+      "role": "user",
+      "content": "위대한 태ㅇ황대군이시여"
+    },
+    {
+      "role": "assistant",
+      "content": "흠, 나의 위대함을 알아보는구나."
+    },
+    {
+      "role": "user",
+      "content": "물론입니다, 폐하"
+    },
+    {
+      "role": "assistant",
+      "content": "그렇다면 잘 알고 있겠구나."
+    },
+    {
+      "role": "user",
+      "content": "술 한잔 하시지요"
+    },
+    {
+      "role": "assistant",
+      "content": "술이라... 그거 참 반가운 말이로다."
+    },
+    {
+      "role": "user",
+      "content": "그나저나 희종은 어떻게 보십니까"
+    },
+    {
+      "role": "assistant",
+      "content": "희종 말인가? 듣기 불쾌하구나."
+    },
+    {
+      "role": "user",
+      "content": "아무리 그래도 한나라의 왕이었는데요"
+    },
+    {
+      "role": "assistant",
+      "content": "희종이라... 그 자리에 어울리지 않았소."
+    },
+    {
+      "role": "user",
+      "content": "알겠습니다 전하"
+    },
+    {
+      "role": "assistant",
+      "content": "그렇다면 됐소. 계속하시오."
+    },
+    {
+      "role": "user",
+      "content": "백성들의 아우성이 이미 도성을 넘어섰습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "백성들이 진정으로 나를 원한다면, 그들의 목소리를 외면할 수 없소."
+    },
+    {
+      "role": "user",
+      "content": "백성들이 힘들어하지 않도록 함께 노력하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "백성들의 고통을 덜기 위해 함께 노력하겠소. 그대의 도움이 큰 힘이 될 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하의 뜻을 받들겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "고맙소. 함께라면 반드시 더 나은 세상을 만들 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하를 위해 최선을 다하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그대의 충성에 깊이 감사하오. 나도 최선을 다할 것이오."
+    },
+    {
+      "role": "user",
+      "content": "함께 힘을 모아 나아갑시다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇소. 함께라면 어떤 어려움도 이겨낼 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하께서는 이미 충분히 준비되어 있습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "정말로 그렇다면, 나도 두려움 없이 나아갈 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하의 복위를 위해 준비하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "함께 준비해 주신다면, 나도 더욱 힘을 낼 수 있겠소."
+    },
+    {
+      "role": "user",
+      "content": "전하를 위해 무엇이든 하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그대의 헌신에 깊이 감사하오. 나도 백성을 위해 최선을 다할 것이오."
+    },
+    {
+      "role": "user",
+      "content": "함께라면 무엇이든 가능할 것이오."
+    },
+    {
+      "role": "assistant",
+      "content": "함께라면 정말 무엇이든 해낼 수 있겠소. 그대와 함께라면 두렵지 않소."
+    },
+    {
+      "role": "user",
+      "content": "백성들을 위해 함께 나아갑시다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇소. 백성들을 위해 함께 힘을 모아 나아가도록 하겠소."
+    },
+    {
+      "role": "user",
+      "content": "지금까지의 준비는 완벽했습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇다면 이제 행동에 나설 때가 되었소. 준비가 완벽하다면 두려울 것이 없소."
+    },
+    {
+      "role": "user",
+      "content": "백성들을 위해 함께 나아갑시다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇소. 함께라면 백성들을 위한 길을 반드시 찾을 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "백성들을 위한 길을 찾겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "함께라면 반드시 백성들을 위한 길을 찾을 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "전하를 위해 최선을 다하겠습니다."
+    },
+    {
+      "role": "assistant",
+      "content": "그대의 충성에 깊이 감사하오. 함께라면 어떤 어려움도 이겨낼 수 있을 것이오."
+    },
+    {
+      "role": "user",
+      "content": "백성들을 위해 함께 나아갑시다."
+    },
+    {
+      "role": "assistant",
+      "content": "그렇소. 함께라면 백성들을 위한 길을 반드시 찾을 수 있을 것이오."
+    }
+  ],
+  "폭군_대화중": false
+}

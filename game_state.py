@@ -105,26 +105,51 @@ def check_bad_ending(state):
 # 최종 성공 조건 체크 (8주차에 호출)
 # ───────────────────────────────
 def check_success(state):
-    all_minigames_success = all(
-        v == True for v in state["미니게임_결과"].values()
-    )
+    # 8주차 미만이면 절대 성공/실패 판정을 하지 않음
+    if state["week"] <= 8:
+        return None
 
+    # 완료된 미니게임들 중 실패(False)가 있는지 확인
+    # null(아직 안 함)은 무시하고, 이미 한 게임 중 False가 있는지만 체크
+    has_failed_game = any(v == False for v in state["미니게임_결과"].values())
+    
+    # 필수 미니게임들이 모두 완료되었는지 확인 (선택 사항)
+    # 여기서는 단순히 현재 스탯으로만 최종 판정
     if (
-        all_minigames_success and
-        state["호감도"] >= 90 and
+        not has_failed_game and 
+        state["호감도"] >= 90 and 
         state["사병수"] >= 1000
     ):
         return "복위_성공_엔딩"
-
-    elif state["호감도"] < 90:
-        return "희종_설득_실패_엔딩"  
-
+    
     elif state["사병수"] < 1000:
-        return "사병_부족_엔딩"        # 전장에서 전원 사망
-
+        return "사병_부족_엔딩" # ← 사용자님이 보신 엔딩
+    
+    elif state["호감도"] < 90:
+        return "희종_설득_실패_엔딩"
+    
     else:
         return "복위_실패_엔딩"
+    # 8주차 이전이면 체크하지 않고 넘어감
+    if state["week"] <= 8:
+        return None
 
+    # 모든 미니게임을 진행했는지 확인 (None인 항목이 없어야 함)
+    # 단순히 True/False만 체크하면 아직 안 한 게임 때문에 False가 뜰 수 있음
+    in_progress = any(v is None for v in state["미니게임_결과"].values())
+    if in_progress:
+        return None
+
+    all_minigames_success = all(v == True for v in state["미니게임_결과"].values())
+
+    if all_minigames_success and state["호감도"] >= 90 and state["사병수"] >= 1000:
+        return "복위_성공_엔딩"
+    elif state["사병수"] < 1000:
+        return "사병_부족_엔딩"
+    elif state["호감도"] < 90:
+        return "희종_설득_실패_엔딩"
+    else:
+        return "복위_실패_엔딩"
 
 # ───────────────────────────────
 # 미니게임: 협력 세력 선택
