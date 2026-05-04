@@ -234,6 +234,8 @@ def chat(req: ChatRequest):
     이미지키워드 = gpt_response.get("이미지키워드", "")
     호감도 = game_state["호감도"]
 
+    검색키워드 = 이미지키워드
+    
     if game_state.get("폭군_대화중"):
         검색키워드 = f"폭군 {이미지키워드}"
         이미지파일 = find_best_image(검색키워드)
@@ -248,6 +250,8 @@ def chat(req: ChatRequest):
         else:
             이미지파일 = "희종_0.png"
 
+    if game_state.get("폭군_대화중"):
+        이미지파일 = find_best_image(검색키워드)
     # 환경에 따른 베이스 URL
         BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
