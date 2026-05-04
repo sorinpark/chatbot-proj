@@ -229,18 +229,17 @@ def chat(req: ChatRequest):
     if game_state["week"] > 8:
         success_result = check_success(game_state)
 
-    # RAG 이미지 검색
-# RAG 이미지 검색 부분 교체
+    # ── 이미지 검색 ──────────────────────────
     이미지키워드 = gpt_response.get("이미지키워드", "")
     호감도 = game_state["호감도"]
 
-    검색키워드 = 이미지키워드
-    
+    # 기본값 먼저 설정
+    이미지파일 = "희종_0.png"
+
     if game_state.get("폭군_대화중"):
         검색키워드 = f"폭군 {이미지키워드}"
         이미지파일 = find_best_image(검색키워드)
     else:
-    # 희종은 호감도 수치로 직접 파일 결정
         if 호감도 >= 70:
             이미지파일 = "희종_70.png"
         elif 호감도 >= 50:
@@ -250,14 +249,8 @@ def chat(req: ChatRequest):
         else:
             이미지파일 = "희종_0.png"
 
-    if game_state.get("폭군_대화중"):
-        이미지파일 = find_best_image(검색키워드)
-    # 환경에 따른 베이스 URL
-        BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
-
-# RAG 이미지 검색 후
-        이미지파일 = find_best_image(검색키워드)
-        이미지URL = f"{BASE_URL}/images/{이미지파일}"
+    이미지URL = f"{BASE_URL}/images/{이미지파일}"
+    # ─────────────────────────────────────────
 
     return {
         "대사": gpt_response.get("대사", ""),
@@ -280,6 +273,7 @@ def chat(req: ChatRequest):
         "bad_ending": bad_ending,
         "success_result": success_result,
     }
+       
 
 
 # ───────────────────────────────
