@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: danjong-backend
+    runtime: docker
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
