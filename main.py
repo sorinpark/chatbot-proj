@@ -24,18 +24,14 @@ from game_state import (
 from prompt import build_system_prompt, WEEK_NARRATION
 from rag import find_best_image
 
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
-# ───────────────────────────────
-# 초기 세팅
-# ───────────────────────────────
 load_dotenv()
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+
 app = FastAPI()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# 정적 이미지 서빙
 app.mount("/images", StaticFiles(directory="static/images"), name="images")
 
-# CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -43,42 +39,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 게임 상태
-game_state = get_initial_state()
-
-# 메모리 관리
+game_states = {}
 memories = {}
+
+def get_game_state(session_id: str) -> dict:
+    if session_id not in game_states:
+        game_states[session_id] = get_initial_state()
+    return game_states[session_id]
 
 def get_memory(session_id: str) -> list:
     if session_id not in memories:
         memories[session_id] = []
     return memories[session_id]
 
-
-# ───────────────────────────────
-# 요청 형식 정의
-# ───────────────────────────────
 class ChatRequest(BaseModel):
     message: str
+    session_id: str = ""
 
 class MinigameRequest(BaseModel):
     type: str
     choice: str
+    session_id: str = ""
 
 class RecommendRequest(BaseModel):
     week: int = 1
     affection: int = 0
     last_npc_text: str = ""
+    session_id: str = ""
+
+class TyrantRequest(BaseModel):
+    session_id: str = ""
 
 
-# ───────────────────────────────
-# GPT 호출 함수
-# ───────────────────────────────
 def call_gpt(system_prompt: str, history: list, session_id: str = "default") -> dict:
     memory = get_memory(session_id)
-
     messages = [{"role": "system", "content": system_prompt}]
-
     for msg in memory[-6:]:
         messages.append(msg)
 
@@ -108,13 +103,9 @@ def call_gpt(system_prompt: str, history: list, session_id: str = "default") -> 
 
     if not clean.startswith("{") and not clean.startswith("["):
         return {
-            "대사": clean[:150],
-            "호감도변화": 0,
-            "심기변화": 0,
-            "이유": "텍스트 응답",
+            "대사": clean[:150], "호감도변화": 0, "심기변화": 0, "이유": "텍스트 응답",
             "추천답변": ["계속 말씀해 주시오.", "전하, 괜찮으십니까?", "함께하겠습니다."],
-            "이미지키워드": "유배지 왕",
-            "힌트": None
+            "이미지키워드": "유배지 왕", "힌트": None
         }
 
     try:
@@ -123,7 +114,6 @@ def call_gpt(system_prompt: str, history: list, session_id: str = "default") -> 
             parsed = parsed[0]
         if isinstance(parsed, str):
             parsed = json.loads(parsed)
-
         if "대사" in parsed:
             대사 = parsed["대사"]
             for marker in ['{"', '{ "']:
@@ -131,7 +121,6 @@ def call_gpt(system_prompt: str, history: list, session_id: str = "default") -> 
                 if brace_idx > 0:
                     parsed["대사"] = 대사[:brace_idx].strip()
                     break
-
         return parsed
 
     except json.JSONDecodeError:
@@ -147,64 +136,47 @@ def call_gpt(system_prompt: str, history: list, session_id: str = "default") -> 
         return {
             "대사": 대사,
             "호감도변화": int(호감도_match.group(1)) if 호감도_match else 0,
-            "심기변화": 0,
-            "이유": "파싱 오류",
-            "추천답변": 추천답변,
-            "이미지키워드": "유배지 왕",
-            "힌트": None
+            "심기변화": 0, "이유": "파싱 오류",
+            "추천답변": 추천답변, "이미지키워드": "유배지 왕", "힌트": None
         }
 
 
-# ───────────────────────────────
-# 엔드포인트 1: 서버 상태 확인
-# ───────────────────────────────
 @app.get("/")
 def root():
     return {"message": "단종 프로젝트 서버 살아있음!"}
 
 
-# ───────────────────────────────
-# 엔드포인트 2: 게임 상태 조회
-# ───────────────────────────────
-@app.get("/state")
-def get_state():
+@app.get("/state/{session_id}")
+def get_state(session_id: str):
+    gs = get_game_state(session_id)
     return {
-        "week": game_state["week"],
-        "호감도": game_state["호감도"],
-        "사병수": game_state["사병수"],
-        "민심": game_state["민심"],
-        "폭군심기": game_state["폭군심기"],
-        "대화횟수_이번주": game_state["대화횟수_이번주"],
-        "미니게임_결과": game_state["미니게임_결과"],
+        "week": gs["week"], "호감도": gs["호감도"], "사병수": gs["사병수"],
+        "민심": gs["민심"], "폭군심기": gs["폭군심기"],
+        "대화횟수_이번주": gs["대화횟수_이번주"], "미니게임_결과": gs["미니게임_결과"],
     }
 
 
-# ───────────────────────────────
-# 엔드포인트 3: 게임 초기화
-# ───────────────────────────────
 @app.post("/reset")
-def reset_game():
-    global game_state
-    game_state = get_initial_state()
+def reset_game(req: TyrantRequest):
+    sid = req.session_id or "default"
+    if sid in game_states: del game_states[sid]
+    if sid in memories: del memories[sid]
     return {"message": "게임이 초기화되었습니다."}
 
 
-# ───────────────────────────────
-# 엔드포인트 4: 일반 대화
-# ───────────────────────────────
 @app.post("/chat")
 def chat(req: ChatRequest):
-    global game_state
+    sid = req.session_id or "default"
+    game_state = get_game_state(sid)
 
     game_state["conversation_history"].append({"role": "user", "content": req.message})
     game_state["대화횟수_이번주"] += 1
 
     system_prompt = build_system_prompt(game_state)
-    gpt_response = call_gpt(system_prompt, game_state["conversation_history"])
+    gpt_response = call_gpt(system_prompt, game_state["conversation_history"], sid)
 
     game_state["conversation_history"].append({
-        "role": "assistant",
-        "content": gpt_response.get("대사", "")
+        "role": "assistant", "content": gpt_response.get("대사", "")
     })
 
     호감도_변화 = gpt_response.get("호감도변화", 0)
@@ -229,11 +201,8 @@ def chat(req: ChatRequest):
     if game_state["week"] > 8:
         success_result = check_success(game_state)
 
-    # ── 이미지 검색 ──────────────────────────
     이미지키워드 = gpt_response.get("이미지키워드", "")
     호감도 = game_state["호감도"]
-
-    # 기본값 먼저 설정
     이미지파일 = "희종_0.png"
 
     if game_state.get("폭군_대화중"):
@@ -250,7 +219,7 @@ def chat(req: ChatRequest):
             이미지파일 = "희종_0.png"
 
     이미지URL = f"{BASE_URL}/images/{이미지파일}"
-    # ─────────────────────────────────────────
+    game_states[sid] = game_state
 
     return {
         "대사": gpt_response.get("대사", ""),
@@ -273,19 +242,14 @@ def chat(req: ChatRequest):
         "bad_ending": bad_ending,
         "success_result": success_result,
     }
-       
 
 
-# ───────────────────────────────
-# 엔드포인트 5: 추천 답변
-# ───────────────────────────────
 @app.post("/recommend")
 def recommend(req: RecommendRequest):
     prompt = f"""조선시대 궁중 게임에서 플레이어가 폐위된 왕 희종에게 할 수 있는 추천 답변 5개를 만들어줘.
 조건: {req.week}주차, 호감도={req.affection}, 희종의 마지막 말="{req.last_npc_text}".
 각 답변은 자연스러운 한국어 1문장(20자 이내).
 반드시 JSON 배열로만: ["답변1","답변2","답변3","답변4","답변5"]. JSON 외 절대 없이."""
-
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}],
@@ -300,36 +264,31 @@ def recommend(req: RecommendRequest):
         return {"추천답변": ["전하, 안녕하십니까.", "걱정 마시옵소서.", "함께하겠습니다.", "백성들이 기다리오.", "힘내시길 바라오."]}
 
 
-# ───────────────────────────────
-# 엔드포인트 6: 미니게임
-# ───────────────────────────────
 @app.post("/minigame")
 def minigame(req: MinigameRequest):
-    global game_state
+    sid = req.session_id or "default"
+    game_state = get_game_state(sid)
 
     success = False
     ending = None
 
     if req.type in ["협력세력_1차", "협력세력_2차"]:
         game_state, success, ending = minigame_협력세력(game_state, req.choice, req.type)
-
     elif req.type in ["사병키우기_1차", "사병키우기_2차", "사병키우기_3차"]:
         try:
             count = int(req.choice)
         except ValueError:
             return {"error": "숫자를 입력해주세요."}
         game_state, success, ending = minigame_사병키우기(game_state, count, req.type)
-
     elif req.type == "비밀서신":
         game_state, success, ending = minigame_비밀서신(game_state, req.choice)
-
     else:
         return {"error": "알 수 없는 미니게임 타입"}
 
+    game_states[sid] = game_state
+
     return {
-        "success": success,
-        "ending": ending,
-        "game_over": not success,
+        "success": success, "ending": ending, "game_over": not success,
         "stats": {
             "사병수": game_state["사병수"],
             "호감도": game_state["호감도"],
@@ -339,20 +298,21 @@ def minigame(req: MinigameRequest):
     }
 
 
-# ───────────────────────────────
-# 엔드포인트 7: 폭군 씬
-# ───────────────────────────────
 @app.post("/tyrant/start")
-def start_tyrant_scene():
-    global game_state
+def start_tyrant_scene(req: TyrantRequest):
+    sid = req.session_id or "default"
+    game_state = get_game_state(sid)
     game_state["폭군_대화중"] = True
     game_state["폭군심기"] = 60 if game_state["week"] == 4 else 40
     game_state["연속칭찬횟수"] = 0
+    game_states[sid] = game_state
     return {"message": "폭군과의 대화 시작", "심기": game_state["폭군심기"]}
 
 
 @app.post("/tyrant/end")
-def end_tyrant_scene():
-    global game_state
+def end_tyrant_scene(req: TyrantRequest):
+    sid = req.session_id or "default"
+    game_state = get_game_state(sid)
     game_state["폭군_대화중"] = False
+    game_states[sid] = game_state
     return {"message": "폭군과의 대화 종료"}
