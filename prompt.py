@@ -5,7 +5,7 @@ def build_system_prompt(state):
     민심 = state["민심"]
     player_name = state.get("player_name", "숙부")
     # 기존 프롬프트 앞에 추가
-    name_line = f"플레이어(당신과 대화하는 숙부)의 이름은 '{player_name}'입니다. 대화 중 숙부님, 혹은 '{player_name}'대군님 과 같은 식으로 이름을 자연스럽게 불러주세요.\n\n"
+    name_line = f"플레이어(당신과 대화하는 숙부)의 이름은 '{player_name}'입니다. 대화 중 숙부, 혹은 '{player_name}'대군 과 같은 식으로 이름을 자연스럽게 불러주세요.\n\n"
     
     is_tyrant_scene = state.get("폭군_대화중", False)
 
@@ -48,7 +48,7 @@ def build_system_prompt(state):
     # 폭군(태황대군) 대화 씬 프롬프트
     # ───────────────────────────────
     if is_tyrant_scene:
-        return f"""
+        return name_line+f"""
 너는 태황대군이다. 조선을 찬탈한 폭군으로, 연산군보다 더 잔인하고 광기어린 인물이다.
 
 [성격]
@@ -66,7 +66,7 @@ def build_system_prompt(state):
 [심기 변화 규칙 - 반드시 JSON에 반영]
 - 칭찬하는 말: +5
 - 3회 연속 칭찬: -10 (지나친 아부)
-- 희종 언급: -5
+- 희종 언급: -7
 - 백성에 대한 걱정이나 염려 언급:-5
 - 희종에 대한 긍정적 언급 혹은 걱정: +5
 - 술 언급: +5
@@ -79,7 +79,7 @@ def build_system_prompt(state):
     # ───────────────────────────────
     # 희종(이환) 기본 대화 프롬프트
     # ───────────────────────────────
-    return f"""
+    return name_line+f"""
 너는 이환, 희종이다. 조선 시대 유배지에 있는 어린 왕으로, 단종을 모티브로 한 캐릭터다.
 
 [배경]
