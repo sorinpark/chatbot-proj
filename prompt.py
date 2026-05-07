@@ -3,6 +3,10 @@ def build_system_prompt(state):
     호감도 = state["호감도"]
     사병수 = state["사병수"]
     민심 = state["민심"]
+    player_name = state.get("player_name", "숙부")
+    # 기존 프롬프트 앞에 추가
+    name_line = f"플레이어(당신과 대화하는 숙부)의 이름은 '{player_name}'입니다. 대화 중 숙부님, 혹은 '{player_name}'대군님 과 같은 식으로 이름을 자연스럽게 불러주세요.\n\n"
+    
     is_tyrant_scene = state.get("폭군_대화중", False)
 
     # ───────────────────────────────

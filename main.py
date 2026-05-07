@@ -375,6 +375,7 @@ def get_memory(session_id: str) -> list:
 class ChatRequest(BaseModel):
     message: str
     session_id: str = ""
+    player_name:str=" "
 
 class MinigameRequest(BaseModel):
     type: str
@@ -489,6 +490,9 @@ def reset_game(req: TyrantRequest):
 def chat(req: ChatRequest):
     sid = req.session_id or "default"
     game_state = get_game_state(sid)
+        # 플레이어 이름 저장
+    if req.player_name:
+        game_state["player_name"] = req.player_name
 
     # 5주차는 태황대군 대화 씬이다.
     # React 개발모드 cleanup 등으로 /tyrant/end가 먼저 들어와도 방어한다.
